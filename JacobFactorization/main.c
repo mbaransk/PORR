@@ -13,9 +13,11 @@ int main(void)
     double x_old[sizeOfMatrix];
     double Mx[sizeOfMatrix];
     double Nb[sizeOfMatrix];
-    double N[sizeOfMatrix][sizeOfMatrix];
+    double N[sizeOfMatrix];
     double M[sizeOfMatrix][sizeOfMatrix];
     double sumLU[sizeOfMatrix][sizeOfMatrix];
+
+    float x2[100];
 	printf("Jacob Factorization\n");
 
     for(i=0;i<sizeOfMatrix;i++)
@@ -25,7 +27,7 @@ int main(void)
     		L[i][j] = 0;
     		D[i][j] = 0;
     		U[i][j] = 0;
-    		N[i][j] = 0;
+
     		M[i][j] = 0;
     		sumLU[i][j] = 0;
         }
@@ -33,6 +35,8 @@ int main(void)
 		x_old[i]=0;
 		Nb[i]=0;
 		Mx[i]=0;
+		N[i] = 0;
+		x_old[i]=0;
     }
     iter=0;
     for(i=0;i<sizeOfMatrix;i++)
@@ -47,7 +51,7 @@ int main(void)
       		U[i][j] = A[i][j];
 
     for(i=0;i<sizeOfMatrix;i++)
-    	N[i][i] = 1/D[i][i];
+    	N[i] = 1/D[i][i];
 
     for(i=0;i<sizeOfMatrix;i++)
          for(j=0;j<sizeOfMatrix;j++)
@@ -56,103 +60,32 @@ int main(void)
 
     for(i=0;i<sizeOfMatrix;i++)
     	for(j=0;j<sizeOfMatrix;j++)
-    		for(k=0; k<sizeOfMatrix;k++)
-    		{
-    			M[i][j]+=-N[i][k]*sumLU[k][j];
-    		}
-
-    	for(i=0;i<sizeOfMatrix;i++)
-        	for(j=0;j<sizeOfMatrix;j++)
-        	{
-        		Nb[i]+=N[i][j]*b[j];
-        		//printf("%d\t%d\tNb: %f\n", i,j,Nb[i]);
-        	}
-
-    	while(iter<7)
     	{
-    		for(i=0;i<sizeOfMatrix;i++)
-    		{
-    			for(j=0;j<sizeOfMatrix;j++)
-    			{
-    				Mx[i]+=M[i][j]*x_old[j];
-    			}
-    			x[i]=Nb[i]+Mx[i];
-    		}
-
-    		for(i=0;i<sizeOfMatrix;i++)
-    		{
-    			x_old[i]=x[i];
-    			printf("x_old: %f\n", x_old[i]);
-    		}
-    		iter++;
-    		printf("\n");
+    		M[i][j]=-(sumLU[i][j]*N[i]);
     	}
-   ////////////////////////////////////////////////////////////////////////////
 
 
-	printf("Test:\n\n");
-	/*
-	printf("Matrix A\n");
-	for(i=0;i<sizeOfMatrix;i++)
-	{
-	 	for(j=0;j<sizeOfMatrix;j++)
-	  		printf("%f\t",A[i][j]);
-	 	printf("\n");
-	}
+    iter=200000000;
 
-	printf("Matrix L\n");
-		for(i=0;i<sizeOfMatrix;i++)
-		{
-		 	for(j=0;j<sizeOfMatrix;j++)
-		  		printf("%f\t",L[i][j]);
-		 	printf("\n");
-		}
+    while(iter>0)
+    {
+       for (i=0; i<sizeOfMatrix; i++)
+       {
+          x[i]= N[i]*b[i];
+          for (j=0; j<sizeOfMatrix; j++)
+          {
+        	 Mx[i] = M[i][j]*x_old[j];
+             x[i] +=Mx[i];
+          }
+       }
+       for (i=0; i<sizeOfMatrix; i++)
+          x_old[i] = x[i];
+       iter--;
+    }
 
-	printf("Matrix D\n");
-	for(i=0;i<sizeOfMatrix;i++)
-	{
-	 	for(j=0;j<sizeOfMatrix;j++)
-	  		printf("%f\t",D[i][j]);
-	 	printf("\n");
-	}
-	printf("Matrix U\n");
-	for(i=0;i<sizeOfMatrix;i++)
-	{
-		for(j=0;j<sizeOfMatrix;j++)
-	  		printf("%f\t",U[i][j]);
-	 	printf("\n");
-	}
-
-	printf("Matrix N\n");
-	for(i=0;i<sizeOfMatrix;i++)
-	{
-		for(j=0;j<sizeOfMatrix;j++)
-	  		printf("%f\t",N[i][j]);
-	 	printf("\n");
-	}
-	printf("Matrix sumLU\n");
-		for(i=0;i<sizeOfMatrix;i++)
-		{
-			for(j=0;j<sizeOfMatrix;j++)
-		  		printf("%f\t",sumLU[i][j]);
-		 	printf("\n");
-		}
-		printf("Matrix M\n");
-		for(i=0;i<sizeOfMatrix;i++)
-		{
-			for(j=0;j<sizeOfMatrix;j++)
-				printf("%f\t",M[i][j]);
-		 	printf("\n");
-		}
-		printf("Vector b\n");
-		for(i=0;i<sizeOfMatrix;i++)
-			printf("%f\t",b[i]);
-		printf("\n");
-
-		printf("Vector x_old\n");
-		for(i=0;i<sizeOfMatrix;i++)
-			printf("%f\t",x_old[i]);
-		printf("\n");
-	*/
+    printf("Wynik\n");
+    for (i=0; i<sizeOfMatrix; i++)
+       printf("x[%d] = %f\n", (i+1), x_old[i]);
 	return 0;
 }
+
